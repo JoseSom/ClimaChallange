@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Commonn size -->
+    <dimen name="common_size_min">4dp</dimen>
+    <dimen name="commin_size_small">8dp</dimen>
+    <dimen name="common_size_default">16dp</dimen>
+    <dimen name="common_size_middle">21dp</dimen>
+    <dimen name="common_size_large">41dp</dimen>
+    <dimen name="common_size_large_large">80dp</dimen>
+
+    <!-- Common text size -->
+    <dimen name="common_text_size_min">12sp</dimen>
+    <dimen name="common_text_size_small">14sp</dimen>
+    <dimen name="common_text_size_default">16sp</dimen>
+    <dimen name="common_text_size_middle">21sp</dimen>
+    <dimen name="common_text_size_large">31sp</dimen>
+    <dimen name="common_text_size_max">51sp</dimen>
+
+    <!-- Img size -->
+    <dimen name="img_size_principal">100dp</dimen>
+    <dimen name="img_size_icons">21dp</dimen>
+
+    <!-- Item weather -->
+    <dimen name="item_size_default">120dp</dimen>
+    <dimen name="item_card_elevation">1dp</dimen>
+    <dimen name="img_size_item">50dp</dimen>
+
+</resources>

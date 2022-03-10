@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">Clima Challange</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Weather Challenge</string>
+
+    <string name="content_descripton_settings">settings</string>
+    <string name="content_description_info">info</string>
+    <string name="weather_condition_image">Weather Condition Image</string>
+    <string name="sunrise">Sunrise</string>
 </resources>
