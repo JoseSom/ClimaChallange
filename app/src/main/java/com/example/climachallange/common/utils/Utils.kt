@@ -1,17 +1,27 @@
 package com.example.climachallange.common.utils
 
+import android.Manifest
+import android.app.Activity
 import android.app.Application
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import android.view.View
+import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker
+import com.example.climachallange.R
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import java.io.IOException
 import java.nio.charset.Charset
 
 fun checkForInternet(context: Context): Boolean {
     // Registrar la actividad con el servicio connectivity manager
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     // Si la versión de Android es M o mayor se usa NetworkCaoabilities para verificar
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         // Devuelve un objeto de tipo Network correspondiente a la conectividad del dispositivo
@@ -45,11 +55,15 @@ fun loadJSONFromAsset(fileName: String): String? {
         inputStream.read(buffer)
         inputStream.close()
 
-        json = String(buffer,Charsets.UTF_8)
-    }catch (ex: IOException){
+        json = String(buffer, Charsets.UTF_8)
+    } catch (ex: IOException) {
         Log.v("Utils", "Error ${ex.message}")
         ex.printStackTrace()
         return null
     }
     return json
 }
+
+
+
+
