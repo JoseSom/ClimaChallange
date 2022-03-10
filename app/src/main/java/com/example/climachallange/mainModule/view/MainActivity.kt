@@ -1,7 +1,8 @@
-package com.example.climachallange
+package com.example.climachallange.mainModule.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.climachallange.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
