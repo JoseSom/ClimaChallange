@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class Minutely(
     val dt:Long,
-    val
+    val precipitation: Double
 )

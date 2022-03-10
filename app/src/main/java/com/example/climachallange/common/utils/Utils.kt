@@ -1,9 +1,13 @@
 package com.example.climachallange.common.utils
 
+import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
+import java.io.IOException
+import java.nio.charset.Charset
 
 fun checkForInternet(context: Context): Boolean {
     // Registrar la actividad con el servicio connectivity manager
@@ -30,4 +34,22 @@ fun checkForInternet(context: Context): Boolean {
         @Suppress("DEPRECATION")
         return networkInfo.isConnected
     }
+}
+
+fun loadJSONFromAsset(fileName: String): String? {
+    val json: String?
+    try {
+        val inputStream = Application().assets.open(fileName)
+        val size = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+
+        json = String(buffer,Charsets.UTF_8)
+    }catch (ex: IOException){
+        Log.v("Utils", "Error ${ex.message}")
+        ex.printStackTrace()
+        return null
+    }
+    return json
 }
