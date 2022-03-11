@@ -12,5 +12,5 @@ data class WeatherOneCallDTO (
     val humidity: String,
     val date: String,
     val imgWeatherCondition: String,
-    val daily: List<Daily>?
+    val daily: List<Daily>
     )

@@ -16,6 +16,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.climachallange.BuildConfig.APPLICATION_ID
@@ -23,6 +25,8 @@ import com.example.climachallange.R
 import com.example.climachallange.common.instances.SharedPreferenceInstance
 import com.example.climachallange.common.utils.checkForInternet
 import com.example.climachallange.databinding.ActivityMainBinding
+import com.example.climachallange.mainModule.adapters.DailyWeatherAdapter
+import com.example.climachallange.mainModule.model.Daily
 import com.example.climachallange.mainModule.model.WeatherEntityDTO
 import com.example.climachallange.mainModule.model.WeatherOneCallDTO
 import com.example.climachallange.mainModule.viewModel.MainViewModel
@@ -39,6 +43,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mMainViewModel: MainViewModel
     private lateinit var mSharedPreferences: SharedPreferenceInstance
+    private lateinit var mLinearLayoutManager: RecyclerView.LayoutManager
+    private lateinit var mDailyAdapter: DailyWeatherAdapter
+
     /**
      * Punto de entrada para el API Fused Location Provider.
      */
@@ -51,24 +58,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initializeComponentsViewMain()
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        if (!checkPermissions()) {
-            requestPermissions()
-        } else {
-            if (checkForInternet(this)) {
+        if (checkForInternet(this)) {
+            if (!checkPermissions()) {
+                requestPermissions()
+            } else {
                 // despues de que se obtiene la location se ejecuta el setUpViewData con esa location
-                getLastLocation(){ location ->
+                getLastLocation() { location ->
                     setupViewModel()
                 }
-            } else {
-                showError(getString(R.string.no_internet_access))
-                with(mBinding){
-                    mainTvNoAccessInternet.isVisible = true
-                    mainFabSettings.isVisible = false
-                    mainFabInfo.isVisible = false
-                    mainTvDirection.isVisible = false
-                    mainClDataWeather.isVisible = false
-                }
-
+            }
+        } else {
+            showError(getString(R.string.no_internet_access))
+            with(mBinding) {
+                mainTvNoAccessInternet.isVisible = true
+                mainFabSettings.isVisible = false
+                mainFabInfo.isVisible = false
+                mainTvDirection.isVisible = false
+                mainClDataWeather.isVisible = false
             }
         }
     }
@@ -110,12 +116,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         mMainViewModel.mWheatherOneCallLiveData.observe(this) { respuesta ->
-           setUiOneCall(respuesta)
+            setUiOneCall(respuesta)
         }
     }
 
     private fun setUiOneCall(respuesta: WeatherOneCallDTO?) {
         showIndicator(false)
+
+        mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mDailyAdapter = DailyWeatherAdapter(respuesta?.daily!!)
+
+        mBinding.mainRvWeatherPronostic.apply {
+            layoutManager = mLinearLayoutManager
+            adapter = mDailyAdapter
+        }
+
         mBinding.apply {
             mainTvDirection.text = respuesta?.name
             mainTvDate.text = respuesta?.date
@@ -154,7 +169,6 @@ class MainActivity : AppCompatActivity() {
                 .into(mainIvWeatherCondition)
         }
     }
-
 
 
     /**
