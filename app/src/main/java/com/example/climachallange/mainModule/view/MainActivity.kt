@@ -26,7 +26,6 @@ import com.example.climachallange.common.instances.SharedPreferenceInstance
 import com.example.climachallange.common.utils.checkForInternet
 import com.example.climachallange.databinding.ActivityMainBinding
 import com.example.climachallange.mainModule.adapters.DailyWeatherAdapter
-import com.example.climachallange.mainModule.model.Daily
 import com.example.climachallange.mainModule.model.WeatherEntityDTO
 import com.example.climachallange.mainModule.model.WeatherOneCallDTO
 import com.example.climachallange.mainModule.viewModel.MainViewModel
@@ -34,7 +33,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivityError"
@@ -132,19 +130,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         mBinding.apply {
-            mainTvDirection.text = respuesta?.name
-            mainTvDate.text = respuesta?.date
-            mainTvTemperatureNumber.text = respuesta?.temp.toString()
-            mainTvTemperatureScale.text = "°C"
-            mainTvWeatherCondition.text = respuesta?.weatherCondition
-            mainTvSunrise.text = respuesta?.sunrise
-            mainTvSunset.text = respuesta?.sunset
-            mainTvFeelsLike.text = respuesta?.feelsLike
-            mainTvWind.text = respuesta?.wind
-            mainTvPressure.text = respuesta?.pressure
-            mainTvHumidity.text = respuesta?.humidity
+            mainTvDirection.text = respuesta.name
+            mainTvDate.text = respuesta.date
+            mainTvTemperatureNumber.text = respuesta.temp
+            mainTvTemperatureScale.text = "°F"
+            mainTvWeatherCondition.text = respuesta.weatherCondition
+            mainTvSunrise.text = respuesta.sunrise
+            mainTvSunset.text = respuesta.sunset
+            mainTvFeelsLike.text = respuesta.feelsLike
+            mainTvWind.text = respuesta.wind
+            mainTvPressure.text = respuesta.pressure
+            mainTvHumidity.text = respuesta.humidity
             Glide.with(this@MainActivity)
-                .load(respuesta?.imgWeatherCondition)
+                .load(respuesta.imgWeatherCondition)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(mainIvWeatherCondition)
         }
@@ -155,7 +153,7 @@ class MainActivity : AppCompatActivity() {
             mainTvDirection.text = respuesta.name
             mainTvDate.text = respuesta.date
             mainTvTemperatureNumber.text = respuesta.temp.toString()
-            mainTvTemperatureScale.text = "°C"
+            mainTvTemperatureScale.text = "°F"
             mainTvWeatherCondition.text = respuesta.weatherCondition
             mainTvSunrise.text = respuesta.sunrise
             mainTvSunset.text = respuesta.sunset

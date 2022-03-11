@@ -24,7 +24,7 @@ class DailyWeatherAdapter(private var dailys: List<Daily> ): RecyclerView.Adapte
         val daily = dailys[position]
 
         with(holder){
-            binding.itemTvTemperatureScale.text = "°C"
+            binding.itemTvTemperatureScale.text = "°F"
             binding.itemTvVariable.text = daily.weather[0].description
             binding.itemTvTemperatureNumber.text = daily.temp.day.toString()
             Glide.with(binding.root)
