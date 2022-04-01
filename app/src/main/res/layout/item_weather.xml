@@ -21,9 +21,9 @@
             android:id="@+id/itemTvTemperatureNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/common_size_min"
+            android:layout_marginStart="24dp"
             android:textAppearance="@style/textViewSubtitle"
-            app:layout_constraintStart_toStartOf="@+id/itemIvWeatherCondition"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/itemIvWeatherCondition"
             tools:text="30" />
 
@@ -32,8 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/textViewSubtitleYellow"
-            app:layout_constraintBottom_toBottomOf="@+id/itemTvTemperatureNumber"
-            app:layout_constraintEnd_toEndOf="@+id/itemIvWeatherCondition"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/itemTvTemperatureNumber"
             app:layout_constraintTop_toTopOf="@+id/itemTvTemperatureNumber"
             tools:text="°C" />
@@ -49,13 +48,14 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/itemTvSunset"
-            android:layout_width="wrap_content"
+            android:id="@+id/itemTvVariable"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:textAppearance="@style/textViewContent"
-            app:layout_constraintEnd_toEndOf="@+id/itemIvWeatherCondition"
-            app:layout_constraintStart_toStartOf="@+id/itemIvWeatherCondition"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/itemTvTemperatureNumber"
+            android:textAlignment="center"
             tools:text="07:40 PM" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

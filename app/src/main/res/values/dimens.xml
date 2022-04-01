@@ -22,8 +22,8 @@
     <dimen name="img_size_icons">21dp</dimen>
 
     <!-- Item weather -->
-    <dimen name="item_size_default">120dp</dimen>
+    <dimen name="item_size_default">130dp</dimen>
     <dimen name="item_card_elevation">1dp</dimen>
-    <dimen name="img_size_item">50dp</dimen>
+    <dimen name="img_size_item">30dp</dimen>
 
 </resources>
