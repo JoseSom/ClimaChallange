@@ -1,22 +1,9 @@
 package com.example.climachallange.common.utils
 
-import android.Manifest
-import android.app.Activity
-import android.app.Application
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.util.Log
-import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
-import com.example.climachallange.R
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
-import java.io.IOException
-import java.nio.charset.Charset
 
 fun checkForInternet(context: Context): Boolean {
     // Registrar la actividad con el servicio connectivity manager
@@ -46,23 +33,10 @@ fun checkForInternet(context: Context): Boolean {
     }
 }
 
-fun loadJSONFromAsset(fileName: String): String? {
-    val json: String?
-    try {
-        val inputStream = Application().assets.open(fileName)
-        val size = inputStream.available()
-        val buffer = ByteArray(size)
-        inputStream.read(buffer)
-        inputStream.close()
-
-        json = String(buffer, Charsets.UTF_8)
-    } catch (ex: IOException) {
-        Log.v("Utils", "Error ${ex.message}")
-        ex.printStackTrace()
-        return null
+val Any.TAG: String
+    get() {
+        return javaClass.simpleName
     }
-    return json
-}
 
 
 

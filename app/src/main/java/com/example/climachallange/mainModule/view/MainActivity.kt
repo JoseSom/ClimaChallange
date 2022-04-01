@@ -23,6 +23,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.climachallange.BuildConfig.APPLICATION_ID
 import com.example.climachallange.R
 import com.example.climachallange.common.instances.SharedPreferenceInstance
+import com.example.climachallange.common.utils.TAG
+import com.example.climachallange.common.utils.Units
+import com.example.climachallange.common.utils.Units.*
 import com.example.climachallange.common.utils.checkForInternet
 import com.example.climachallange.databinding.ActivityMainBinding
 import com.example.climachallange.mainModule.adapters.DailyWeatherAdapter
@@ -35,12 +38,14 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivityError"
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mMainViewModel: MainViewModel
     private lateinit var mSharedPreferences: SharedPreferenceInstance
+    private var isFirstTime: Boolean = false
+    private var isByOneCall: Boolean = true
+
     private lateinit var mLinearLayoutManager: RecyclerView.LayoutManager
     private lateinit var mDailyAdapter: DailyWeatherAdapter
 
@@ -55,60 +60,62 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeComponentsViewMain()
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        setupObservers()
+
         if (checkForInternet(this)) {
             if (!checkPermissions()) {
                 requestPermissions()
             } else {
-                // despues de que se obtiene la location se ejecuta el setUpViewData con esa location
-                getLastLocation() { location ->
-                    setupViewModel()
+                isByOneCall = mSharedPreferences.getBooleanValue(getString(R.string.is_one_call))
+                if (isByOneCall) {
+                    getLastLocation() { location ->
+                        setupOneCall(location)
+                    }
+                } else {
+                    setupWeather()
                 }
             }
         } else {
             showError(getString(R.string.no_internet_access))
-            with(mBinding) {
+            showMessageInternet(true)
+        }
+    }
+
+    private fun showMessageInternet(isVisible: Boolean) {
+        with(mBinding) {
+            if (isVisible) {
                 mainTvNoAccessInternet.isVisible = true
+                mainPbIndicator.isVisible = true
                 mainFabSettings.isVisible = false
                 mainFabInfo.isVisible = false
                 mainTvDirection.isVisible = false
                 mainClDataWeather.isVisible = false
+            } else {
+                mainTvNoAccessInternet.isVisible = false
+                mainPbIndicator.isVisible = false
+                mainFabSettings.isVisible = true
+                mainFabInfo.isVisible = true
+                mainTvDirection.isVisible = true
+                mainClDataWeather.isVisible = true
             }
         }
+
     }
+
 
     private fun initializeComponentsViewMain() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         mSharedPreferences = SharedPreferenceInstance.getInstance(this)
-        mSharedPreferences.initializeComponents(this)
+
+        isFirstTime = mSharedPreferences.getBooleanValue(getString(R.string.first_time))
+        mSharedPreferences.initializeComponents(this, isFirstTime)
+
+        mMainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    private fun setupViewModel() {
-        mMainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        val isFirstTime =
-            false //mSharedPreferences.getStringValue(getString(R.string.first_time)).toBoolean()
-        if (isFirstTime) {
-            mMainViewModel.getWheatherByIdViewModel(
-                SharedPreferenceInstance.getLongValue(getString(R.string.city_default_key)),
-                SharedPreferenceInstance.getStringValue(getString(R.string.units_default_key))
-                    .toString(),
-                SharedPreferenceInstance.getStringValue(getString(R.string.lenguaje_default_key))
-                    .toString(),
-                SharedPreferenceInstance.getStringValue(getString(R.string.api_id)).toString()
-            )
-        } else {
-            mMainViewModel.getWheatherByLocationViewModel(
-                latitude,
-                longitude,
-                SharedPreferenceInstance.getStringValue(getString(R.string.units_default_key))
-                    .toString(),
-                SharedPreferenceInstance.getStringValue(getString(R.string.lenguaje_default_key))
-                    .toString(),
-                SharedPreferenceInstance.getStringValue(getString(R.string.api_id)).toString()
-            )
-        }
-
+    private fun setupObservers() {
         mMainViewModel.mWheatherLiveData.observe(this) { respuesta ->
             setUi(respuesta)
         }
@@ -116,10 +123,77 @@ class MainActivity : AppCompatActivity() {
         mMainViewModel.mWheatherOneCallLiveData.observe(this) { respuesta ->
             setUiOneCall(respuesta)
         }
+
+        mMainViewModel.getLoadingStatus().observe(this){ isVisible ->
+            showIndicator(isVisible)
+        }
+
+        mMainViewModel.getTypeError().observe(this){ error ->
+            showError(error.errorMessage)
+        }
+    }
+
+
+    private fun setupOneCall(location: Location) {
+        mSharedPreferences.setStringValue(
+            getString(R.string.latitude),
+            location.latitude.toString()
+        )
+        mSharedPreferences.setStringValue(
+            getString(R.string.longitude),
+            location.longitude.toString()
+        )
+
+
+        if (checkForInternet(this)) {
+            showMessageInternet(false)
+            mMainViewModel.setLoadingStatus(true)
+            mMainViewModel.getWheatherByLocationViewModel(
+                latitude,
+                longitude,
+                mSharedPreferences.getStringValue(getString(R.string.units_default_key)).toString(),
+                mSharedPreferences.getStringValue(getString(R.string.lenguaje_default_key)).toString(),
+                mSharedPreferences.getStringValue(getString(R.string.api_id)).toString()
+            )
+        } else {
+            showError(getString(R.string.no_internet_access))
+            showMessageInternet(true)
+        }
+    }
+
+    private fun setupWeather() {
+        mMainViewModel.getWheatherByIdViewModel(
+            mSharedPreferences.getLongValue(getString(R.string.city_default_key)),
+            mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+                .toString(),
+            mSharedPreferences.getStringValue(getString(R.string.lenguaje_default_key))
+                .toString(),
+            mSharedPreferences.getStringValue(getString(R.string.api_id)).toString()
+        )
+
+        mSharedPreferences.setStringValue(
+            getString(R.string.lenguaje_default_key),
+            getString(R.string.english)
+        )
+        mSharedPreferences.setStringValue(
+            getString(R.string.units_default_key),
+            getString(R.string.imperial_units_key)
+        )
     }
 
     private fun setUiOneCall(respuesta: WeatherOneCallDTO?) {
-        showIndicator(false)
+        mMainViewModel.setLoadingStatus(false)
+
+        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+        val letterTemperature: String = unitTemperature?.let { unit ->
+            when (unit) {
+                IMPERIAL.nameUnit -> "°F"
+                STANDARD.nameUnit -> "K"
+                METRIC.nameUnit -> "°C"
+                else -> ""
+            }
+        }.toString()
+
 
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mDailyAdapter = DailyWeatherAdapter(respuesta?.daily!!)
@@ -133,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             mainTvDirection.text = respuesta.name
             mainTvDate.text = respuesta.date
             mainTvTemperatureNumber.text = respuesta.temp
-            mainTvTemperatureScale.text = "°F"
+            mainTvTemperatureScale.text = letterTemperature
             mainTvWeatherCondition.text = respuesta.weatherCondition
             mainTvSunrise.text = respuesta.sunrise
             mainTvSunset.text = respuesta.sunset
@@ -149,11 +223,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUi(respuesta: WeatherEntityDTO) {
+        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+        val letterTemperature: String = unitTemperature?.let { unit ->
+            when (unit) {
+                IMPERIAL.nameUnit -> "°F"
+                STANDARD.nameUnit -> "K"
+                METRIC.nameUnit -> "°C"
+                else -> ""
+            }
+        }.toString()
+
+
         mBinding.apply {
             mainTvDirection.text = respuesta.name
             mainTvDate.text = respuesta.date
             mainTvTemperatureNumber.text = respuesta.temp.toString()
-            mainTvTemperatureScale.text = "°F"
+            mainTvTemperatureScale.text = letterTemperature
             mainTvWeatherCondition.text = respuesta.weatherCondition
             mainTvSunrise.text = respuesta.sunrise
             mainTvSunset.text = respuesta.sunset
@@ -167,7 +252,6 @@ class MainActivity : AppCompatActivity() {
                 .into(mainIvWeatherCondition)
         }
     }
-
 
     /**
      * Devuelve el estado de los permisos que se necesitan
@@ -230,8 +314,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Permiso otorgado.
                 // Podemos pasar la referencia a una funcion si cumple con el mismo prototipo
-                (grantResults[0] == PackageManager.PERMISSION_GRANTED) -> getLastLocation(this::setupViewData)
-
+                (grantResults[0] == PackageManager.PERMISSION_GRANTED) -> getLastLocation(this::setupOneCall)
 
                 else -> {
                     showSnackbar(
@@ -272,8 +355,10 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener { taskLocation ->
                 if (taskLocation.isSuccessful && taskLocation.result != null) {
                     val location = taskLocation.result
+
                     latitude = location?.latitude.toString()
                     longitude = location?.longitude.toString()
+
                     Log.d(TAG, "GetLasLoc Lat: $latitude Long: $longitude")
                     onLocation(taskLocation.result)
                 } else {
@@ -281,10 +366,6 @@ class MainActivity : AppCompatActivity() {
                     showSnackbar(R.string.no_location_detected)
                 }
             }
-    }
-
-    private fun setupViewData(location: Location) {
-        //TODO: Implementar metodo para guadar la locacion en los preferences
     }
 
     private fun showIndicator(visible: Boolean) {
