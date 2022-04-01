@@ -25,7 +25,7 @@ class DailyWeatherAdapter(private var dailys: List<Daily> ): RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val daily = dailys[position]
-        val unitTemperature = mSharedPreferences.getStringValue(context.getString(R.string.units_default_key))
+        val unitTemperature = mSharedPreferences.getStringValue(context.getString(R.string.unit_key))
         val letterTemperature: String = unitTemperature?.let { unit ->
             when (unit) {
                 Units.IMPERIAL.nameUnit -> "°F"

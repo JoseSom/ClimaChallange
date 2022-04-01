@@ -1,7 +1,6 @@
 package com.example.climachallange.common.instances
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -50,14 +49,14 @@ object SharedPreferenceInstance {
 
     fun initializeComponents(context: Context, isFirstTime: Boolean) {
         with(editor) {
-            Log.d(TAG,isFirstTime.toString())
             if (isFirstTime){
-                putString(context.getString(R.string.lenguaje_default_key), context.getString(R.string.english))
-                putString(context.getString(R.string.units_default_key), context.getString(R.string.imperial_units_key))
-                putLong(context.getString(R.string.city_default_key), 3530597L)
+                putString(context.getString(R.string.language_key), context.getString(R.string.spanish_value))
+                putString(context.getString(R.string.unit_key), context.getString(R.string.metric))
+                putLong(context.getString(R.string.city_key), 3530597L)
             }else{
-                putString(context.getString(R.string.lenguaje_default_key), getStringValue(context.getString(R.string.lenguaje_selected)))
-                putString(context.getString(R.string.units_default_key), context.getString(R.string.imperial_units_key))
+                putString(context.getString(R.string.language_key), getStringValue(context.getString(R.string.language_selected)))
+                putString(context.getString(R.string.unit_key), getStringValue(context.getString(R.string.unit_selected)))
+                putLong(context.getString(R.string.city_key), getLongValue(context.getString(R.string.city_selected)))
             }
             putString(context.getString(R.string.api_id), "c9034ac6e5d184a011185581d5c92da8")
             putBoolean(context.getString(R.string.first_time), false)

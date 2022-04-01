@@ -10,14 +10,9 @@
     <string name="first_time">first_time</string>
     <string name="api_id">appId</string>
 
-
-    <string name="lenguaje_default_key">language_default</string>
-    <string name="english">en</string>
-
-
-    <string name="units_default_key">units_default</string>
-    <string name="imperial_units_key">imperial</string>
-    <string name="city_default_key">city_default</string>
+    <string name="imperial">imperial</string>
+    <string name="standard">standard</string>
+    <string name="metric">metric</string>
 
     <string name="no_internet_access">No Internet Access</string>
     <string name="no_location_detected">"Can access to location. Please check that location services are enabled on your device."</string>
@@ -27,11 +22,47 @@
     <string name="settings_title">Settings</string>
     <string name="settings">Settings</string>
     <string name="no_internet_acces_longer">You don\'t have internet access. \n try again later</string>
-    <string name="lenguaje_selected">lenguaje_selected</string>
-    <string name="units_selected">units_selected</string>
+    <string name="language_selected">language_selected</string>
+    <string name="unit_selected">units_selected</string>
     <string name="city_selected">city_selected</string>
     <string name="latitude">latitude</string>
     <string name="longitude">longitude</string>
     <string name="is_one_call">is_one_call</string>
     <string name="error_service">Error al consultar el servicio</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="select_language_title">Select language</string>
+    <string name="select_units_title">Select Units</string>
+
+    <!-- Languages -->
+    <string name="afrikaans_value">af</string>
+    <string name="albanian_value">al</string>
+    <string name="arabic_value">ar</string>
+    <string name="afrikaans_name">Afrikaans</string>
+    <string name="albanian_name">Albanian</string>
+    <string name="arabic_name">Arabic</string>
+    <string name="english_name">English</string>
+    <string name="spanish_name">Spanish</string>
+    <string name="english_value">en</string>
+    <string name="spanish_value">sp</string>
+    <string name="ubication_selected">isByUbication</string>
+    <string name="select_mode_ubicacion">Select location mode</string>
+    <string name="language_key">language_key</string>
+    <string name="unit_key">unit_key</string>
+    <string name="city_key">city_key</string>
+
 </resources>

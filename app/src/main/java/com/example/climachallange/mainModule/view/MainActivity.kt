@@ -3,6 +3,7 @@ package com.example.climachallange.mainModule.view
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -16,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,7 +26,6 @@ import com.example.climachallange.BuildConfig.APPLICATION_ID
 import com.example.climachallange.R
 import com.example.climachallange.common.instances.SharedPreferenceInstance
 import com.example.climachallange.common.utils.TAG
-import com.example.climachallange.common.utils.Units
 import com.example.climachallange.common.utils.Units.*
 import com.example.climachallange.common.utils.checkForInternet
 import com.example.climachallange.databinding.ActivityMainBinding
@@ -32,6 +33,7 @@ import com.example.climachallange.mainModule.adapters.DailyWeatherAdapter
 import com.example.climachallange.mainModule.model.WeatherEntityDTO
 import com.example.climachallange.mainModule.model.WeatherOneCallDTO
 import com.example.climachallange.mainModule.viewModel.MainViewModel
+import com.example.climachallange.settingsModule.view.SettingsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -43,8 +45,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mMainViewModel: MainViewModel
     private lateinit var mSharedPreferences: SharedPreferenceInstance
+    private lateinit var mPreferenceSettings: SharedPreferences
+
     private var isFirstTime: Boolean = false
-    private var isByOneCall: Boolean = true
+    private var isNotByOneCall: Boolean = true
 
     private lateinit var mLinearLayoutManager: RecyclerView.LayoutManager
     private lateinit var mDailyAdapter: DailyWeatherAdapter
@@ -61,17 +65,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initializeComponentsViewMain()
         setupObservers()
+        startRequest()
 
+    }
+
+    private fun startRequest() {
         if (checkForInternet(this)) {
             if (!checkPermissions()) {
                 requestPermissions()
             } else {
-                isByOneCall = mSharedPreferences.getBooleanValue(getString(R.string.is_one_call))
-                if (isByOneCall) {
+                isNotByOneCall = mSharedPreferences.getBooleanValue(getString(R.string.ubication_selected))
+                if (!isNotByOneCall) {
                     getLastLocation() { location ->
                         setupOneCall(location)
                     }
                 } else {
+                    mBinding.mainRvWeatherPronostic.visibility = View.GONE
                     setupWeather()
                 }
             }
@@ -81,20 +90,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getSettingsValues() {
+        mSharedPreferences.setStringValue(
+            getString(R.string.language_key),
+            mPreferenceSettings.getString(getString(R.string.language_selected),getString(R.string.spanish_value)).toString()
+        )
+
+        mSharedPreferences.setStringValue(
+            getString(R.string.unit_key),
+            mPreferenceSettings.getString(getString(R.string.unit_selected),getString(R.string.metric)).toString()
+        )
+
+        mSharedPreferences.setBooleanValue(
+            getString(R.string.ubication_selected),
+            mPreferenceSettings.getBoolean(getString(R.string.ubication_selected),false)
+        )
+
+        Log.d(TAG,mPreferenceSettings.getString(getString(R.string.city_selected),
+            3530597L.toString()
+        ).toString())
+
+        mSharedPreferences.setLongValue( getString(R.string.city_selected),
+            mPreferenceSettings.getString(getString(R.string.city_selected), 3530597L.toString())!!.toLong()
+        )
+    }
+
     private fun showMessageInternet(isVisible: Boolean) {
         with(mBinding) {
             if (isVisible) {
                 mainTvNoAccessInternet.isVisible = true
                 mainPbIndicator.isVisible = true
                 mainFabSettings.isVisible = false
-                mainFabInfo.isVisible = false
+                mainFabRefresh.isVisible = false
                 mainTvDirection.isVisible = false
                 mainClDataWeather.isVisible = false
             } else {
                 mainTvNoAccessInternet.isVisible = false
                 mainPbIndicator.isVisible = false
                 mainFabSettings.isVisible = true
-                mainFabInfo.isVisible = true
+                mainFabRefresh.isVisible = true
                 mainTvDirection.isVisible = true
                 mainClDataWeather.isVisible = true
             }
@@ -107,12 +141,23 @@ class MainActivity : AppCompatActivity() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mPreferenceSettings = PreferenceManager.getDefaultSharedPreferences(this)
         mSharedPreferences = SharedPreferenceInstance.getInstance(this)
 
         isFirstTime = mSharedPreferences.getBooleanValue(getString(R.string.first_time))
         mSharedPreferences.initializeComponents(this, isFirstTime)
 
         mMainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        mBinding.mainFabSettings.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+
+        mBinding.mainFabRefresh.setOnClickListener {
+            getSettingsValues()
+            startRequest()
+        }
     }
 
     private fun setupObservers() {
@@ -151,40 +196,35 @@ class MainActivity : AppCompatActivity() {
             mMainViewModel.getWheatherByLocationViewModel(
                 latitude,
                 longitude,
-                mSharedPreferences.getStringValue(getString(R.string.units_default_key)).toString(),
-                mSharedPreferences.getStringValue(getString(R.string.lenguaje_default_key)).toString(),
+                mSharedPreferences.getStringValue(getString(R.string.unit_key)).toString(),
+                mSharedPreferences.getStringValue(getString(R.string.language_key)).toString(),
                 mSharedPreferences.getStringValue(getString(R.string.api_id)).toString()
             )
         } else {
             showError(getString(R.string.no_internet_access))
             showMessageInternet(true)
         }
+
+        getSettingsValues()
     }
 
     private fun setupWeather() {
+        getSettingsValues()
+
         mMainViewModel.getWheatherByIdViewModel(
-            mSharedPreferences.getLongValue(getString(R.string.city_default_key)),
-            mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+            mSharedPreferences.getLongValue(getString(R.string.city_key)),
+            mSharedPreferences.getStringValue(getString(R.string.unit_key))
                 .toString(),
-            mSharedPreferences.getStringValue(getString(R.string.lenguaje_default_key))
+            mSharedPreferences.getStringValue(getString(R.string.language_key))
                 .toString(),
             mSharedPreferences.getStringValue(getString(R.string.api_id)).toString()
-        )
-
-        mSharedPreferences.setStringValue(
-            getString(R.string.lenguaje_default_key),
-            getString(R.string.english)
-        )
-        mSharedPreferences.setStringValue(
-            getString(R.string.units_default_key),
-            getString(R.string.imperial_units_key)
         )
     }
 
     private fun setUiOneCall(respuesta: WeatherOneCallDTO?) {
         mMainViewModel.setLoadingStatus(false)
 
-        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.unit_key))
         val letterTemperature: String = unitTemperature?.let { unit ->
             when (unit) {
                 IMPERIAL.nameUnit -> "°F"
@@ -199,6 +239,7 @@ class MainActivity : AppCompatActivity() {
         mDailyAdapter = DailyWeatherAdapter(respuesta?.daily!!)
 
         mBinding.mainRvWeatherPronostic.apply {
+            visibility = View.VISIBLE
             layoutManager = mLinearLayoutManager
             adapter = mDailyAdapter
         }
@@ -223,7 +264,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUi(respuesta: WeatherEntityDTO) {
-        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.units_default_key))
+        val unitTemperature = mSharedPreferences.getStringValue(getString(R.string.unit_key))
         val letterTemperature: String = unitTemperature?.let { unit ->
             when (unit) {
                 IMPERIAL.nameUnit -> "°F"
@@ -389,6 +430,11 @@ class MainActivity : AppCompatActivity() {
             snackbar.setAction(getString(actionStrId), listener)
         }
         snackbar.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getSettingsValues()
     }
 
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import java.io.IOException
 
 fun checkForInternet(context: Context): Boolean {
     // Registrar la actividad con el servicio connectivity manager
@@ -38,6 +39,16 @@ val Any.TAG: String
         return javaClass.simpleName
     }
 
+fun getJsonDataFromAsset(context: Context, fileName: String): String? {
+    val jsonString: String
+    try {
+        jsonString = context.assets.open(fileName).bufferedReader().use { it.readText() }
+    } catch (ioException: IOException) {
+        ioException.printStackTrace()
+        return null
+    }
+    return jsonString
+}
 
 
 
