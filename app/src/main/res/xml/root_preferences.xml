@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+
+    <PreferenceCategory app:title="@string/settings_title">
+        <ListPreference
+            app:defaultValue="@string/metric"
+            app:entries="@array/units"
+            app:entryValues="@array/units"
+            app:key="@string/unit_selected"
+            app:title="@string/select_units_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="@string/spanish_value"
+            app:entries="@array/languages"
+            app:entryValues="@array/languagesValues"
+            app:key="@string/language_selected"
+            app:title="@string/select_language_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Location">
+
+        <SwitchPreferenceCompat
+            app:key="@string/ubication_selected"
+            app:summaryOff="For my location"
+            app:summaryOn="For city"
+            app:title="@string/select_mode_ubicacion" />
+
+        <ListPreference
+            android:dependency="@string/ubication_selected"
+            android:key="@string/city_selected"
+            android:title="Select the city"
+            app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>
