@@ -1,0 +1,35 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
+    <string-array name="units">
+        <item>@string/metric</item>
+        <item>@string/imperial</item>
+        <item>@string/standard</item>
+    </string-array>
+
+    <string-array name="languages">
+        <item>@string/afrikaans_name</item>
+        <item>@string/albanian_name</item>
+        <item>@string/arabic_name</item>
+        <item>@string/english_name</item>
+        <item>@string/spanish_name</item>
+    </string-array>
+
+    <string-array name="languagesValues">
+        <item>@string/afrikaans_value</item>
+        <item>@string/albanian_value</item>
+        <item>@string/arabic_value</item>
+        <item>@string/english_value</item>
+        <item>@string/spanish_value</item>
+    </string-array>
+
+</resources>

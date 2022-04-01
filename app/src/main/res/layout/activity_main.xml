@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_bg"
+    android:id="@+id/mainClprincipal"
     tools:context=".mainModule.view.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,18 +30,18 @@
         android:textSize="@dimen/common_text_size_min"
         app:drawableLeftCompat="@drawable/ic_location_on"
         app:drawableTint="@color/secondary_yellow"
-        app:layout_constraintEnd_toStartOf="@+id/mainFabInfo"
+        app:layout_constraintEnd_toStartOf="@+id/mainFabRefresh"
         app:layout_constraintStart_toEndOf="@+id/mainFabSettings"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Allentown,New Mexico 31134" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/mainFabInfo"
+        android:id="@+id/mainFabRefresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/common_size_middle"
         android:contentDescription="@string/content_description_info"
-        android:src="@drawable/info"
+        android:src="@drawable/ic_refresh"
         app:backgroundTint="@color/backgroud_alpha_white"
         app:layout_constraintBottom_toBottomOf="@+id/mainTvDirection"
         app:layout_constraintEnd_toEndOf="parent"
